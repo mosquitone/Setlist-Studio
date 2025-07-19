@@ -2,20 +2,16 @@
 
 import React from 'react';
 import { Container, Typography, Box, Paper } from '@mui/material';
+import { useI18n } from '@/hooks/useI18n';
 
 interface LegalPageTemplateProps {
   title: string;
-  description: string;
-  effectiveDate: string;
   children: React.ReactNode;
 }
 
-const LegalPageTemplate: React.FC<LegalPageTemplateProps> = ({
-  title,
-  description,
-  effectiveDate,
-  children,
-}) => {
+const LegalPageTemplate: React.FC<LegalPageTemplateProps> = ({ title, children }) => {
+  const { messages } = useI18n();
+
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Paper elevation={1} sx={{ p: 4 }}>
@@ -24,14 +20,10 @@ const LegalPageTemplate: React.FC<LegalPageTemplateProps> = ({
         </Typography>
 
         <Box sx={{ mt: 4 }}>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            {description}
-          </Typography>
-
           {children}
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: 6 }}>
-            制定日：{effectiveDate}
+            {messages.common.effectiveDate}：2025年7月18日
           </Typography>
         </Box>
       </Paper>

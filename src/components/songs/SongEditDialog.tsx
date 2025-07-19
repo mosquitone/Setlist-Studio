@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Box } from '@mui/material';
 import { Button } from '@/components/common/ui/Button';
 import { Song } from '../../types/graphql';
+import { useI18n } from '@/hooks/useI18n';
 
 interface SongEditDialogProps {
   open: boolean;
@@ -20,6 +21,7 @@ export function SongEditDialog({
   onSave,
   loading = false,
 }: SongEditDialogProps) {
+  const { messages } = useI18n();
   const [formValues, setFormValues] = useState<Omit<Song, 'id' | 'createdAt' | 'updatedAt'>>({
     title: '',
     artist: '',
@@ -63,39 +65,39 @@ export function SongEditDialog({
 
   return (
     <Dialog open={open} onClose={loading ? undefined : onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>楽曲を編集</DialogTitle>
+      <DialogTitle>{messages.songs.form.editTitle}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           <TextField
             ref={titleRef}
-            label="タイトル"
+            label={messages.songs.form.titleLabel}
             value={formValues.title}
             onChange={(e) => handleFieldChange('title', e.target.value)}
             fullWidth
             required
           />
           <TextField
-            label="アーティスト"
+            label={messages.songs.form.artistLabel}
             value={formValues.artist}
             onChange={(e) => handleFieldChange('artist', e.target.value)}
             fullWidth
             required
           />
           <TextField
-            label="キー"
+            label={messages.songs.form.keyLabel}
             value={formValues.key || ''}
             onChange={(e) => handleFieldChange('key', e.target.value)}
             fullWidth
           />
           <TextField
-            label="テンポ"
+            label={messages.songs.form.tempoLabel}
             type="number"
             value={formValues.tempo || ''}
             onChange={(e) => handleFieldChange('tempo', e.target.value)}
             fullWidth
           />
           <TextField
-            label="ノート"
+            label={messages.songs.form.notesLabel}
             value={formValues.notes || ''}
             onChange={(e) => handleFieldChange('notes', e.target.value)}
             fullWidth
@@ -106,10 +108,10 @@ export function SongEditDialog({
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" onClick={onClose} disabled={loading}>
-          キャンセル
+          {messages.common.cancel}
         </Button>
         <Button onClick={handleSave} loading={loading}>
-          保存
+          {messages.common.save}
         </Button>
       </DialogActions>
     </Dialog>

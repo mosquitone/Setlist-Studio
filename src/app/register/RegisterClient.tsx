@@ -20,8 +20,10 @@ import { REGISTER } from '@/lib/server/graphql/apollo-operations';
 import { validateField, ValidationRules } from '@/lib/security/validation-rules';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useI18n } from '@/hooks/useI18n';
 
 export default function RegisterClient() {
+  const { messages } = useI18n();
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +37,9 @@ export default function RegisterClient() {
   const [register, { loading }] = useMutation(REGISTER, {
     onCompleted: () => {
       // 新規登録成功後はログイン画面へ遷移
-      router.push('/login?message=新規登録が完了しました。ログインしてください。');
+      router.push(
+        `/login?message=${messages.notifications.accountCreated || 'Account created successfully. Please login.'}`,
+      );
     },
     onError: (error) => {
       setError(error.message);
@@ -44,7 +48,7 @@ export default function RegisterClient() {
 
   const validatePassword = (password: string): string | null => {
     const result = validateField(password, 'password');
-    return result.isValid ? null : result.message || 'パスワードが無効です';
+    return result.isValid ? null : result.message || messages.validation.passwordTooShort;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -59,12 +63,12 @@ export default function RegisterClient() {
     }
 
     if (password !== confirmPassword) {
-      setError('パスワードが一致しません');
+      setError(messages.validation.passwordsDoNotMatch);
       return;
     }
 
     if (!agreeToTerms) {
-      setError('利用規約およびプライバシーポリシーに同意してください');
+      setError(messages.validation.agreeToTerms || 'Please agree to the terms and conditions');
       return;
     }
 
@@ -82,10 +86,10 @@ export default function RegisterClient() {
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <PersonAddIcon sx={{ fontSize: 64, color: 'primary.main', mb: 2 }} />
             <Typography variant="h4" component="h1" gutterBottom>
-              新規登録
+              {messages.auth.register}
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              アカウントを作成して、セットリストを管理しましょう
+              {messages.auth.createAccountToStart}
             </Typography>
           </Box>
 
@@ -98,7 +102,7 @@ export default function RegisterClient() {
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="ユーザー名"
+              label={messages.auth.username}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               margin="normal"
@@ -107,7 +111,7 @@ export default function RegisterClient() {
             />
             <TextField
               fullWidth
-              label="メールアドレス"
+              label={messages.auth.email}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -117,7 +121,7 @@ export default function RegisterClient() {
             />
             <TextField
               fullWidth
-              label="パスワード"
+              label={messages.auth.password}
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -143,7 +147,7 @@ export default function RegisterClient() {
             />
             <TextField
               fullWidth
-              label="パスワード確認"
+              label={messages.auth.confirmPassword}
               type={showConfirmPassword ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -175,13 +179,13 @@ export default function RegisterClient() {
               label={
                 <Typography variant="body2">
                   <Link href="/terms" style={{ color: 'inherit', textDecoration: 'underline' }}>
-                    利用規約
+                    {messages.auth.terms}
                   </Link>
-                  および
+                  {messages.auth.and || 'and'}
                   <Link href="/privacy" style={{ color: 'inherit', textDecoration: 'underline' }}>
-                    プライバシーポリシー
+                    {messages.auth.privacy}
                   </Link>
-                  に同意します
+                  {messages.auth.agree || 'に同意します'}
                 </Typography>
               }
               sx={{ mt: 2, mb: 1 }}
@@ -194,15 +198,15 @@ export default function RegisterClient() {
               disabled={loading || !agreeToTerms}
               sx={{ mt: 2, mb: 2, py: 1.5 }}
             >
-              {loading ? '登録中...' : '新規登録'}
+              {loading ? messages.common.loading : messages.auth.register}
             </Button>
           </Box>
 
           <Box textAlign="center">
             <Typography variant="body2">
-              すでにアカウントをお持ちですか？{' '}
+              {messages.auth.alreadyHaveAccount}{' '}
               <Link href="/login" style={{ color: 'inherit' }}>
-                <strong>ログイン</strong>
+                <strong>{messages.auth.login}</strong>
               </Link>
             </Typography>
           </Box>

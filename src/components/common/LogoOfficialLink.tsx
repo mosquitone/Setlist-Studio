@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, Link, SxProps, Theme } from '@mui/material';
+import { useI18n } from '@/hooks/useI18n';
 
 interface LogoOfficialLinkProps {
   /**
@@ -37,6 +38,7 @@ export function LogoOfficialLink({
   openNewTab = true,
   sx = {},
 }: LogoOfficialLinkProps) {
+  const { messages } = useI18n();
   return (
     <Link
       href={href}
@@ -73,7 +75,7 @@ export function LogoOfficialLink({
             opacity: 1,
           },
           '&::after': {
-            content: '"公式サイトへ"',
+            content: `"${messages.common.logoOfficialSite}"`,
             bottom: -15,
             fontSize: '12px',
             opacity: 0,
@@ -90,7 +92,7 @@ export function LogoOfficialLink({
             animation: 'pulse 2s infinite',
           },
           '&::after': {
-            content: '"タップして公式サイトへ"',
+            content: `"${messages.common.logoOfficialSiteTap}"`,
             bottom: -8,
             fontSize: '11px',
             opacity: 0.8,

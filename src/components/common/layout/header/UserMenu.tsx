@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -10,6 +12,7 @@ import Link from '@mui/material/Link';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useI18n } from '@/hooks/useI18n';
 
 interface UserMenuProps {
   onAuthClick: () => void;
@@ -17,6 +20,7 @@ interface UserMenuProps {
 
 export function UserMenu({ onAuthClick }: UserMenuProps) {
   const { user } = useAuth();
+  const { messages } = useI18n();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -74,7 +78,7 @@ export function UserMenu({ onAuthClick }: UserMenuProps) {
         >
           <PersonIcon fontSize="small" />
           <Link href="/profile" underline="none" color="inherit">
-            プロフィール
+            {messages.navigation.profile}
           </Link>
         </MenuItem>
         <Divider />
@@ -86,7 +90,7 @@ export function UserMenu({ onAuthClick }: UserMenuProps) {
           sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
         >
           <LogoutIcon fontSize="small" />
-          ログアウト
+          {messages.navigation.logout}
         </MenuItem>
       </Menu>
     </>

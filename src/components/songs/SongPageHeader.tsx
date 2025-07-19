@@ -9,6 +9,7 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 import Link from 'next/link';
+import { useI18n } from '@/hooks/useI18n';
 
 interface SongPageHeaderProps {
   selectedSongs: string[];
@@ -21,6 +22,7 @@ export function SongPageHeader({
   onCreateSetlist,
   onDeleteSelected,
 }: SongPageHeaderProps) {
+  const { messages } = useI18n();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -34,7 +36,7 @@ export function SongPageHeader({
         sx={{ mb: 2 }}
       >
         <Typography variant={isMobile ? 'h5' : 'h4'} component="h1">
-          楽曲管理
+          {messages.songs.title}
         </Typography>
         <Stack direction={isMobile ? 'column' : 'row'} spacing={isMobile ? 1 : 2}>
           {selectedSongs.length > 0 && (
@@ -46,7 +48,8 @@ export function SongPageHeader({
                 size={isMobile ? 'medium' : 'medium'}
                 sx={isMobile ? { minHeight: 40 } : {}}
               >
-                選択した楽曲でセットリスト作成 ({selectedSongs.length}曲)
+                {messages.songs.actions.createSetlist} ({selectedSongs.length}
+                {messages.songs.actions.songsCount})
               </Button>
               <Button
                 variant="danger"
@@ -55,7 +58,8 @@ export function SongPageHeader({
                 size={isMobile ? 'medium' : 'medium'}
                 sx={isMobile ? { minHeight: 40 } : {}}
               >
-                選択した楽曲を削除 ({selectedSongs.length}曲)
+                {messages.songs.actions.deleteSelected} ({selectedSongs.length}
+                {messages.songs.actions.songsCount})
               </Button>
             </Stack>
           )}
@@ -66,12 +70,12 @@ export function SongPageHeader({
             size={isMobile ? 'medium' : 'medium'}
             sx={isMobile ? { minHeight: 40 } : {}}
           >
-            新しい楽曲を追加
+            {messages.songs.actions.addNew}
           </Button>
         </Stack>
       </Stack>
       <Typography variant="body1" color="text.secondary">
-        楽曲の管理と編集ができます。チェックボックスで楽曲を選択してセットリストを作成できます。
+        {messages.songs.description}
       </Typography>
     </Box>
   );

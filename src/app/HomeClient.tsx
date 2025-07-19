@@ -10,8 +10,11 @@ import { FeatureSection } from '../components/home/FeatureSection';
 import { SampleSetlistsSection } from '../components/home/SampleSetlistsSection';
 import { SetlistDashboard } from '../components/home/SetlistDashboard';
 import { AuthActions } from '../components/home/AuthActions';
+import { useI18n } from '@/hooks/useI18n';
+
 export default function HomeClient() {
   const { isLoggedIn, isLoading } = useAuth();
+  const { messages } = useI18n();
 
   const { data: setlistsData, loading: setlistsLoading } = useQuery<GetSetlistsResponse>(
     GET_SETLISTS,
@@ -35,7 +38,7 @@ export default function HomeClient() {
           }}
         >
           <Typography variant="h6" color="text.secondary">
-            読み込み中...
+            {messages.common.loading}
           </Typography>
         </Box>
       </Container>

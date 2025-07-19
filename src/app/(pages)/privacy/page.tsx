@@ -3,14 +3,18 @@
 import React from 'react';
 import { Typography, List, ListItem, ListItemText } from '@mui/material';
 import LegalPageTemplate from '@/components/common/templates/LegalPageTemplate';
+import { useI18n } from '@/hooks/useI18n';
 
 const PrivacyPage: React.FC = () => {
+  const { messages } = useI18n();
+
   return (
-    <LegalPageTemplate
-      title="プライバシーポリシー"
-      description="mosquitone（以下、「当方」といいます。）は、本ウェブサイト上で提供するサービス「Setlist Studio」（以下、「本サービス」といいます。）における、ユーザーの個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下、「本ポリシー」といいます。）を定めます。"
-      effectiveDate="2025年7月18日"
-    >
+    <LegalPageTemplate title={messages.pages.privacy.title}>
+      <Typography variant="body2" color="text.secondary" paragraph>
+        mosquitone（以下、「当方」といいます。）は、本ウェブサイト上で提供するサービス「Setlist
+        Studio」（以下、「本サービス」といいます。）における、ユーザーの個人情報の取扱いについて、以下のとおりプライバシーポリシー（以下、「本ポリシー」といいます。）を定めます。
+      </Typography>
+
       <Typography variant="h6" component="h2" sx={{ mt: 4, mb: 2 }}>
         第1条（個人情報）
       </Typography>

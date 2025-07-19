@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {
   Container,
@@ -37,35 +39,21 @@ import {
   FileCopy,
   PersonOff,
 } from '@mui/icons-material';
-
-// 静的生成を強制
-export const dynamic = 'force-static';
-
-// メタデータ追加
-export const metadata = {
-  title: '利用ガイド - 機能一覧と使い方',
-  description:
-    'Setlist Studioの全機能と使い方を詳しく説明します。未登録ユーザーと登録ユーザーの機能比較、セットリスト作成方法、楽曲管理など完全ガイド。',
-  keywords: ['セットリスト', '使い方', '機能', 'ガイド', 'バンド', '楽曲管理', 'mosquitone'],
-  openGraph: {
-    title: '利用ガイド - Setlist Studio',
-    description:
-      'Setlist Studioの全機能と使い方を詳しく説明します。未登録ユーザーと登録ユーザーの機能比較、セットリスト作成方法、楽曲管理など完全ガイド。',
-    type: 'article',
-  },
-};
+import { useI18n } from '@/hooks/useI18n';
 
 export default function GuidePage() {
+  const { messages } = useI18n();
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2 }}>
           <Typography variant="h3" component="h1">
-            利用ガイド
+            {messages.pages.guide.title}
           </Typography>
         </Box>
         <Typography variant="h6" color="text.secondary" align="center" sx={{ mb: 4 }}>
-          機能一覧と利用方法の完全ガイド
+          {messages.pages.guide.subtitle}
         </Typography>
       </Box>
 
@@ -79,19 +67,16 @@ export default function GuidePage() {
             sx={{ display: 'flex', alignItems: 'center' }}
           >
             <Public sx={{ mr: 2, color: 'primary.main' }} />
-            Setlist Studio とは
+            {messages.pages.guide.aboutSection.title}
           </Typography>
           <Typography variant="body1" paragraph>
-            Setlist Studioは、バンドや音楽グループのためのセットリスト生成・管理ツールです。
-            楽曲情報を管理し、高品質なセットリスト画像を簡単に作成できます。
+            {messages.pages.guide.aboutSection.description1}
           </Typography>
           <Typography variant="body1" paragraph>
-            セットリストは「パブリック（公開）」と「プライベート（非公開）」で管理でき、
-            パブリックセットリストはアカウント登録なしでも閲覧・ダウンロードが可能です。
+            {messages.pages.guide.aboutSection.description2}
           </Typography>
           <Alert severity="info" sx={{ mt: 2 }}>
-            パブリックセットリストは、共有URLを知っている誰でもアクセス可能です。
-            プライベートセットリストは所有者のみが閲覧できます。
+            {messages.pages.guide.aboutSection.alertInfo}
           </Alert>
         </CardContent>
       </Card>
@@ -100,7 +85,7 @@ export default function GuidePage() {
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Typography variant="h4" component="h2" gutterBottom>
-            利用可能機能一覧
+            {messages.pages.guide.featureComparison.title}
           </Typography>
 
           <TableContainer component={Paper}>
@@ -108,25 +93,25 @@ export default function GuidePage() {
               <TableHead>
                 <TableRow>
                   <TableCell>
-                    <strong>機能</strong>
+                    <strong>{messages.pages.guide.featureComparison.features}</strong>
                   </TableCell>
                   <TableCell align="center">
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <PersonOff sx={{ mr: 1, color: 'warning.main' }} />
-                      <strong>未登録ユーザー</strong>
+                      <strong>{messages.pages.guide.featureComparison.unregisteredUser}</strong>
                     </Box>
                   </TableCell>
                   <TableCell align="center">
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <AccountCircle sx={{ mr: 1, color: 'primary.main' }} />
-                      <strong>登録ユーザー</strong>
+                      <strong>{messages.pages.guide.featureComparison.registeredUser}</strong>
                     </Box>
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 <TableRow>
-                  <TableCell>パブリックセットリスト閲覧</TableCell>
+                  <TableCell>{messages.pages.guide.featureComparison.publicSetlistView}</TableCell>
                   <TableCell align="center">
                     <Check sx={{ color: 'success.main' }} />
                   </TableCell>
@@ -135,7 +120,7 @@ export default function GuidePage() {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>画像ダウンロード（Black/White テーマ）</TableCell>
+                  <TableCell>{messages.pages.guide.featureComparison.imageDownload}</TableCell>
                   <TableCell align="center">
                     <Check sx={{ color: 'success.main' }} />
                   </TableCell>
@@ -144,7 +129,7 @@ export default function GuidePage() {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell>セットリスト共有（URL コピー）</TableCell>
+                  <TableCell>{messages.pages.guide.featureComparison.setlistShare}</TableCell>
                   <TableCell align="center">
                     <Check sx={{ color: 'success.main' }} />
                   </TableCell>
@@ -153,7 +138,7 @@ export default function GuidePage() {
                   </TableCell>
                 </TableRow>
                 <TableRow sx={{ bgcolor: 'grey.50' }}>
-                  <TableCell>セットリスト作成・編集・削除</TableCell>
+                  <TableCell>{messages.pages.guide.featureComparison.setlistManagement}</TableCell>
                   <TableCell align="center">
                     <Close sx={{ color: 'error.main' }} />
                   </TableCell>
@@ -162,7 +147,7 @@ export default function GuidePage() {
                   </TableCell>
                 </TableRow>
                 <TableRow sx={{ bgcolor: 'grey.50' }}>
-                  <TableCell>楽曲データベース管理</TableCell>
+                  <TableCell>{messages.pages.guide.featureComparison.songDatabase}</TableCell>
                   <TableCell align="center">
                     <Close sx={{ color: 'error.main' }} />
                   </TableCell>
@@ -171,7 +156,7 @@ export default function GuidePage() {
                   </TableCell>
                 </TableRow>
                 <TableRow sx={{ bgcolor: 'grey.50' }}>
-                  <TableCell>セットリストの公開設定変更</TableCell>
+                  <TableCell>{messages.pages.guide.featureComparison.publicitySettings}</TableCell>
                   <TableCell align="center">
                     <Close sx={{ color: 'error.main' }} />
                   </TableCell>
@@ -180,7 +165,7 @@ export default function GuidePage() {
                   </TableCell>
                 </TableRow>
                 <TableRow sx={{ bgcolor: 'grey.50' }}>
-                  <TableCell>自分のセットリスト複製機能</TableCell>
+                  <TableCell>{messages.pages.guide.featureComparison.duplicateFunction}</TableCell>
                   <TableCell align="center">
                     <Close sx={{ color: 'error.main' }} />
                   </TableCell>
@@ -189,7 +174,7 @@ export default function GuidePage() {
                   </TableCell>
                 </TableRow>
                 <TableRow sx={{ bgcolor: 'grey.50' }}>
-                  <TableCell>個人ダッシュボード</TableCell>
+                  <TableCell>{messages.pages.guide.featureComparison.personalDashboard}</TableCell>
                   <TableCell align="center">
                     <Close sx={{ color: 'error.main' }} />
                   </TableCell>
@@ -198,7 +183,7 @@ export default function GuidePage() {
                   </TableCell>
                 </TableRow>
                 <TableRow sx={{ bgcolor: 'grey.50' }}>
-                  <TableCell>プロフィール管理</TableCell>
+                  <TableCell>{messages.pages.guide.featureComparison.profileManagement}</TableCell>
                   <TableCell align="center">
                     <Close sx={{ color: 'error.main' }} />
                   </TableCell>
@@ -222,10 +207,10 @@ export default function GuidePage() {
             sx={{ display: 'flex', alignItems: 'center' }}
           >
             <PersonAdd sx={{ mr: 2, color: 'warning.main' }} />
-            アカウント作成でさらに便利に
+            {messages.pages.guide.accountBenefits.title}
           </Typography>
           <Typography variant="body1" paragraph>
-            無料のアカウントを作成すると、パブリック機能に加えて以下の機能が利用できます：
+            {messages.pages.guide.accountBenefits.description}
           </Typography>
 
           <Grid container spacing={2}>
@@ -233,10 +218,10 @@ export default function GuidePage() {
               <Paper sx={{ p: 2, textAlign: 'center', height: '100%' }}>
                 <PlaylistAdd sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
                 <Typography variant="h6" gutterBottom>
-                  セットリスト作成
+                  {messages.pages.guide.accountBenefits.setlistCreation.title}
                 </Typography>
                 <Typography variant="body2">
-                  独自のセットリストを無制限に作成・編集できます
+                  {messages.pages.guide.accountBenefits.setlistCreation.description}
                 </Typography>
               </Paper>
             </Grid>
@@ -244,10 +229,10 @@ export default function GuidePage() {
               <Paper sx={{ p: 2, textAlign: 'center', height: '100%' }}>
                 <LibraryMusic sx={{ fontSize: 40, color: 'info.main', mb: 1 }} />
                 <Typography variant="h6" gutterBottom>
-                  楽曲管理
+                  {messages.pages.guide.accountBenefits.songManagement.title}
                 </Typography>
                 <Typography variant="body2">
-                  個人の楽曲データベースで曲情報を効率的に管理
+                  {messages.pages.guide.accountBenefits.songManagement.description}
                 </Typography>
               </Paper>
             </Grid>
@@ -255,17 +240,19 @@ export default function GuidePage() {
               <Paper sx={{ p: 2, textAlign: 'center', height: '100%' }}>
                 <Lock sx={{ fontSize: 40, color: 'secondary.main', mb: 1 }} />
                 <Typography variant="h6" gutterBottom>
-                  プライベート機能
+                  {messages.pages.guide.accountBenefits.privateFeatures.title}
                 </Typography>
-                <Typography variant="body2">非公開セットリストや個人設定などの管理機能</Typography>
+                <Typography variant="body2">
+                  {messages.pages.guide.accountBenefits.privateFeatures.description}
+                </Typography>
               </Paper>
             </Grid>
           </Grid>
 
           <Alert severity="info" sx={{ mt: 3 }}>
             <Typography variant="body2">
-              <strong>今すぐ始める:</strong> 右上の「登録」ボタンからアカウントを作成できます。
-              メールアドレスとパスワードのみで、すぐに全機能をご利用いただけます。
+              <strong>{messages.pages.guide.accountBenefits.signUpNow}</strong>{' '}
+              {messages.pages.guide.accountBenefits.signUpDescription}
             </Typography>
           </Alert>
         </CardContent>
@@ -275,7 +262,7 @@ export default function GuidePage() {
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Typography variant="h4" component="h2" gutterBottom>
-            パブリックセットリストの使用方法
+            {messages.pages.guide.publicUsage.title}
           </Typography>
           <List>
             <ListItem>
@@ -297,8 +284,8 @@ export default function GuidePage() {
                 </Box>
               </ListItemIcon>
               <ListItemText
-                primary="共有URLにアクセス"
-                secondary="パブリックセットリストの共有URLをクリックまたは入力してアクセスします"
+                primary={messages.pages.guide.publicUsage.step1.title}
+                secondary={messages.pages.guide.publicUsage.step1.description}
               />
             </ListItem>
             <ListItem>
@@ -320,8 +307,8 @@ export default function GuidePage() {
                 </Box>
               </ListItemIcon>
               <ListItemText
-                primary="セットリストを確認"
-                secondary="楽曲リスト、バンド情報、イベント詳細などを確認します"
+                primary={messages.pages.guide.publicUsage.step2.title}
+                secondary={messages.pages.guide.publicUsage.step2.description}
               />
             </ListItem>
             <ListItem>
@@ -343,8 +330,8 @@ export default function GuidePage() {
                 </Box>
               </ListItemIcon>
               <ListItemText
-                primary="テーマを選択"
-                secondary="Black（黒）またはWhite（白）テーマから選択できます"
+                primary={messages.pages.guide.publicUsage.step3.title}
+                secondary={messages.pages.guide.publicUsage.step3.description}
               />
             </ListItem>
             <ListItem>
@@ -366,8 +353,8 @@ export default function GuidePage() {
                 </Box>
               </ListItemIcon>
               <ListItemText
-                primary="画像をダウンロード"
-                secondary="「Download」ボタンをクリックして高品質な画像をダウンロードします"
+                primary={messages.pages.guide.publicUsage.step4.title}
+                secondary={messages.pages.guide.publicUsage.step4.description}
               />
             </ListItem>
           </List>
@@ -378,7 +365,7 @@ export default function GuidePage() {
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Typography variant="h4" component="h2" gutterBottom>
-            各ページの機能詳細
+            {messages.pages.guide.pageDetails.title}
           </Typography>
 
           <Grid container spacing={3}>
@@ -387,24 +374,33 @@ export default function GuidePage() {
               <Paper sx={{ p: 3, height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Home sx={{ mr: 2, color: 'primary.main' }} />
-                  <Typography variant="h6">ホームページ</Typography>
+                  <Typography variant="h6">
+                    {messages.pages.guide.pageDetails.homePage.title}
+                  </Typography>
                 </Box>
                 <Typography variant="body2" paragraph>
-                  <strong>未登録ユーザー:</strong> アプリケーションの紹介とアカウント作成への案内
+                  <strong>{messages.pages.guide.featureComparison.unregisteredUser}:</strong>{' '}
+                  {messages.pages.guide.pageDetails.homePage.unregisteredDescription}
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  <strong>登録ユーザー:</strong>{' '}
-                  個人ダッシュボードで自分のセットリスト一覧を表示。各セットリストはカード形式で表示され、直接表示・編集が可能。
+                  <strong>{messages.pages.guide.featureComparison.registeredUser}:</strong>{' '}
+                  {messages.pages.guide.pageDetails.homePage.registeredDescription}
                 </Typography>
                 <List dense>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• セットリスト作成へのクイックアクセス" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.homePage.feature1}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• レスポンシブなグリッドレイアウト" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.homePage.feature2}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• テーマ別カードデザイン" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.homePage.feature3}`}
+                    />
                   </ListItem>
                 </List>
               </Paper>
@@ -415,47 +411,61 @@ export default function GuidePage() {
               <Paper sx={{ p: 3, height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Visibility sx={{ mr: 2, color: 'success.main' }} />
-                  <Typography variant="h6">セットリスト詳細ページ</Typography>
+                  <Typography variant="h6">
+                    {messages.pages.guide.pageDetails.setlistDetail.title}
+                  </Typography>
                 </Box>
                 <Typography variant="body2" paragraph>
-                  セットリストの詳細表示と各種操作が可能です。
+                  {messages.pages.guide.pageDetails.setlistDetail.description}
                 </Typography>
                 <List dense>
                   <ListItem sx={{ pl: 0 }}>
                     <ListItemIcon>
                       <Visibility sx={{ fontSize: 16 }} />
                     </ListItemIcon>
-                    <ListItemText primary="楽曲リスト・イベント情報表示" />
+                    <ListItemText
+                      primary={messages.pages.guide.pageDetails.setlistDetail.feature1}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
                     <ListItemIcon>
                       <Palette sx={{ fontSize: 16 }} />
                     </ListItemIcon>
-                    <ListItemText primary="テーマ変更（Black/White）" />
+                    <ListItemText
+                      primary={messages.pages.guide.pageDetails.setlistDetail.feature2}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
                     <ListItemIcon>
                       <Download sx={{ fontSize: 16 }} />
                     </ListItemIcon>
-                    <ListItemText primary="高品質画像ダウンロード" />
+                    <ListItemText
+                      primary={messages.pages.guide.pageDetails.setlistDetail.feature3}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
                     <ListItemIcon>
                       <Share sx={{ fontSize: 16 }} />
                     </ListItemIcon>
-                    <ListItemText primary="URL共有機能" />
+                    <ListItemText
+                      primary={messages.pages.guide.pageDetails.setlistDetail.feature4}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
                     <ListItemIcon>
                       <Edit sx={{ fontSize: 16 }} />
                     </ListItemIcon>
-                    <ListItemText primary="編集機能（所有者のみ）" />
+                    <ListItemText
+                      primary={messages.pages.guide.pageDetails.setlistDetail.feature5}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
                     <ListItemIcon>
                       <FileCopy sx={{ fontSize: 16 }} />
                     </ListItemIcon>
-                    <ListItemText primary="複製機能（ログインユーザー）" />
+                    <ListItemText
+                      primary={messages.pages.guide.pageDetails.setlistDetail.feature6}
+                    />
                   </ListItem>
                 </List>
               </Paper>
@@ -466,26 +476,39 @@ export default function GuidePage() {
               <Paper sx={{ p: 3, height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <LibraryMusic sx={{ mr: 2, color: 'info.main' }} />
-                  <Typography variant="h6">楽曲管理ページ</Typography>
+                  <Typography variant="h6">
+                    {messages.pages.guide.pageDetails.songManagement.title}
+                  </Typography>
                 </Box>
                 <Typography variant="body2" paragraph>
-                  <strong>要認証:</strong> 個人の楽曲データベースを管理できます。
+                  <strong>{messages.auth.authRequired}:</strong>{' '}
+                  {messages.pages.guide.pageDetails.songManagement.description}
                 </Typography>
                 <List dense>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• 楽曲の追加・編集・削除" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.songManagement.feature1}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• タイトル・アーティスト・キー・テンポ管理" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.songManagement.feature2}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• 演奏時間とメモ機能" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.songManagement.feature3}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• 検索・フィルタリング機能" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.songManagement.feature4}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• セットリスト作成時の楽曲選択" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.songManagement.feature5}`}
+                    />
                   </ListItem>
                 </List>
               </Paper>
@@ -496,32 +519,49 @@ export default function GuidePage() {
               <Paper sx={{ p: 3, height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <PlaylistAdd sx={{ mr: 2, color: 'warning.main' }} />
-                  <Typography variant="h6">セットリスト作成ページ</Typography>
+                  <Typography variant="h6">
+                    {messages.pages.guide.pageDetails.setlistCreation.title}
+                  </Typography>
                 </Box>
                 <Typography variant="body2" paragraph>
-                  <strong>要認証:</strong> 新しいセットリストを作成できます。
+                  <strong>{messages.auth.authRequired}:</strong>{' '}
+                  {messages.pages.guide.pageDetails.setlistCreation.description}
                 </Typography>
                 <List dense>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• 基本情報設定（タイトル・バンド名）" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.setlistCreation.feature1}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• イベント情報（会場・日時・開演時間）" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.setlistCreation.feature2}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• 楽曲追加とドラッグ&ドロップ並び替え" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.setlistCreation.feature3}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• 楽曲追加は最大20曲まで" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.setlistCreation.feature4}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• テーマ選択（Black/White）" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.setlistCreation.feature5}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• プライベート／パブリック設定" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.setlistCreation.feature6}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• 複製元がある場合の自動入力" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.setlistCreation.feature7}`}
+                    />
                   </ListItem>
                 </List>
               </Paper>
@@ -532,23 +572,34 @@ export default function GuidePage() {
               <Paper sx={{ p: 3, height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <AccountCircle sx={{ mr: 2, color: 'secondary.main' }} />
-                  <Typography variant="h6">プロフィールページ</Typography>
+                  <Typography variant="h6">
+                    {messages.pages.guide.pageDetails.profile.title}
+                  </Typography>
                 </Box>
                 <Typography variant="body2" paragraph>
-                  <strong>要認証:</strong> アカウント情報の確認と管理ができます。
+                  <strong>{messages.auth.authRequired}:</strong>{' '}
+                  {messages.pages.guide.pageDetails.profile.description}
                 </Typography>
                 <List dense>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• ユーザー名・メールアドレス表示" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.profile.feature1}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• アカウント作成日時" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.profile.feature2}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• 統計情報（作成セットリスト数など）" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.profile.feature3}`}
+                    />
                   </ListItem>
                   <ListItem sx={{ pl: 0 }}>
-                    <ListItemText primary="• アカウント設定" />
+                    <ListItemText
+                      primary={`• ${messages.pages.guide.pageDetails.profile.feature4}`}
+                    />
                   </ListItem>
                 </List>
               </Paper>

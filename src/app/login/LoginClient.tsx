@@ -18,6 +18,7 @@ import { LOGIN } from '@/lib/server/graphql/apollo-operations';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useI18n } from '@/hooks/useI18n';
 
 export default function LoginClient() {
   const [email, setEmail] = useState('');
@@ -28,6 +29,7 @@ export default function LoginClient() {
   const searchParams = useSearchParams();
   const successMessage = searchParams.get('message');
   const { login: authLogin } = useAuth();
+  const { messages } = useI18n();
 
   const [loginMutation, { loading }] = useMutation(LOGIN, {
     onCompleted: async (data) => {
@@ -61,10 +63,10 @@ export default function LoginClient() {
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <LoginIcon sx={{ fontSize: 64, color: 'primary.main', mb: 2 }} />
             <Typography variant="h4" component="h1" gutterBottom>
-              ログイン
+              {messages.auth.login}
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              アカウントにログインしてセットリストを管理
+              {messages.auth.loginToManageSetlists}
             </Typography>
           </Box>
 
@@ -83,7 +85,7 @@ export default function LoginClient() {
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="メールアドレス"
+              label={messages.auth.email}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -93,7 +95,7 @@ export default function LoginClient() {
             />
             <TextField
               fullWidth
-              label="パスワード"
+              label={messages.auth.password}
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -117,15 +119,20 @@ export default function LoginClient() {
               disabled={loading}
               sx={{ mt: 3, mb: 2, py: 1.5 }}
             >
-              {loading ? 'ログイン中...' : 'ログイン'}
+              {loading ? messages.common.loading : messages.auth.login}
             </Button>
           </Box>
 
           <Box textAlign="center">
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              <Link href="/auth/forgot-password" style={{ color: 'inherit' }}>
+                {messages.auth.forgotPassword}
+              </Link>
+            </Typography>
             <Typography variant="body2">
-              アカウントをお持ちでないですか？{' '}
+              {messages.auth.dontHaveAccount}{' '}
               <Link href="/register" style={{ color: 'inherit' }}>
-                <strong>新規登録</strong>
+                <strong>{messages.auth.register}</strong>
               </Link>
             </Typography>
           </Box>

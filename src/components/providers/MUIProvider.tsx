@@ -2,6 +2,10 @@
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import 'dayjs/locale/ja';
+import 'dayjs/locale/en';
 
 const theme = createTheme({
   palette: {
@@ -67,7 +71,7 @@ export default function MUIProvider({ children }: { children: React.ReactNode })
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {children}
+      <LocalizationProvider dateAdapter={AdapterDayjs}>{children}</LocalizationProvider>
     </ThemeProvider>
   );
 }

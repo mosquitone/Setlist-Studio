@@ -7,8 +7,10 @@ import { SongEditDialog } from '@/components/songs/SongEditDialog';
 import { DeleteConfirmModal } from '@/components/common/DeleteConfirmModal';
 import { useSongs } from '@/hooks/useSongs';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useI18n } from '@/hooks/useI18n';
 
 export default function SongsPage() {
+  const { messages } = useI18n();
   const {
     songs,
     loading,
@@ -48,7 +50,7 @@ export default function SongsPage() {
 
           {error && (
             <Alert severity="error" sx={{ mb: 3 }}>
-              楽曲の読み込みに失敗しました
+              {messages.errors.somethingWentWrong}
             </Alert>
           )}
 
@@ -74,9 +76,9 @@ export default function SongsPage() {
             open={isDeleteDialogOpen}
             onClose={handleDeleteCancel}
             onConfirm={handleDeleteConfirm}
-            title="楽曲を削除"
+            title={messages.common.deleteSong}
             itemName={songToDelete?.title || ''}
-            itemType="楽曲"
+            itemType={messages.common.song}
             loading={deleteLoading}
           />
 
@@ -84,10 +86,10 @@ export default function SongsPage() {
             open={isMultipleDeleteDialogOpen}
             onClose={handleDeleteSelectedCancel}
             onConfirm={handleDeleteSelectedConfirm}
-            title="複数の楽曲を削除"
-            itemName={`${selectedSongs.length}曲`}
-            itemType="楽曲"
-            description="選択した楽曲をすべて削除します。"
+            title={messages.common.deleteSong}
+            itemName={`${selectedSongs.length} ${messages.navigation.songs}`}
+            itemType={messages.common.song}
+            description={messages.confirmations.deleteSong}
             loading={deleteMultipleLoading}
           />
         </Box>

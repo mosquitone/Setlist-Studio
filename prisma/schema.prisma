@@ -8,73 +8,72 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  username  String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  songs     Song[]
-  setlists  Setlist[]
-  
+  id                       String    @id @default(cuid())
+  email                    String    @unique
+  username                 String    @unique
+  password                 String
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+  emailChangeExpires       DateTime?
+  emailChangeToken         String?
+  emailVerificationExpires DateTime?
+  emailVerificationToken   String?
+  emailVerified            Boolean   @default(false)
+  passwordResetExpires     DateTime?
+  passwordResetToken       String?
+  pendingEmail             String?
+  setlists                 Setlist[]
+  songs                    Song[]
+
   @@map("users")
 }
 
 model Song {
-  id       String @id @default(cuid())
-  title    String
-  artist   String?
-  duration Int?    // duration in seconds
-  key      String?
-  tempo    Int?
-  notes    String?
-  
-  userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id        String   @id @default(cuid())
+  title     String
+  artist    String?
+  duration  Int?
+  key       String?
+  tempo     Int?
+  notes     String?
+  userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("songs")
 }
 
 model Setlist {
-  id          String @id @default(cuid())
-  title       String
-  bandName    String?
-  eventName   String?
-  eventDate   DateTime?
-  openTime    String?
-  startTime   String?
-  theme       String?
-  isPublic    Boolean @default(false)
-  
-  userId      String
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  items       SetlistItem[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id        String        @id @default(cuid())
+  title     String
+  bandName  String?
+  eventName String?
+  eventDate DateTime?
+  openTime  String?
+  startTime String?
+  theme     String?
+  isPublic  Boolean       @default(false)
+  userId    String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  items     SetlistItem[]
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("setlists")
 }
 
 model SetlistItem {
-  id       String @id @default(cuid())
-  title    String
-  note     String?
-  order    Int
-  
+  id        String  @id @default(cuid())
+  title     String
+  note      String?
+  order     Int
   setlistId String
   setlist   Setlist @relation(fields: [setlistId], references: [id], onDelete: Cascade)
-  
+
   @@unique([setlistId, order])
   @@map("setlist_items")
 }
-
-// セキュリティ関連テーブル（Vercel対応）
 
 model RateLimitEntry {
   id        String   @id @default(cuid())
@@ -83,40 +82,59 @@ model RateLimitEntry {
   resetTime DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  @@map("rate_limit_entries")
+
   @@index([resetTime])
+  @@map("rate_limit_entries")
 }
 
 model SecurityEvent {
-  id          String   @id @default(cuid())
-  type        String
-  severity    String
-  timestamp   DateTime @default(now())
-  userId      String?
-  ipAddress   String?
-  userAgent   String?
-  resource    String?
-  details     Json?
-  
-  @@map("security_events")
+  id        String   @id @default(cuid())
+  type      String
+  severity  String
+  timestamp DateTime @default(now())
+  userId    String?
+  ipAddress String?
+  userAgent String?
+  resource  String?
+  details   Json?
+
   @@index([timestamp])
   @@index([ipAddress])
   @@index([type])
   @@index([severity])
+  @@map("security_events")
 }
 
 model ThreatActivity {
-  id              String   @id @default(cuid())
-  ipAddress       String
-  activityType    String   // 'login_attempt', 'failed_login', 'rate_limit_hit'
-  userId          String?
-  userAgent       String?
-  timestamp       DateTime @default(now())
-  metadata        Json?
-  
-  @@map("threat_activities")
+  id           String   @id @default(cuid())
+  ipAddress    String
+  activityType String
+  userId       String?
+  userAgent    String?
+  timestamp    DateTime @default(now())
+  metadata     Json?
+
   @@index([ipAddress, timestamp])
   @@index([activityType])
   @@index([timestamp])
+  @@map("threat_activities")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  eventType String
+  outcome   String
+  timestamp DateTime @default(now())
+  details   Json?
+  ipAddress String?
+  riskLevel String
+  userAgent String?
+  userId    String?
+
+  @@index([timestamp])
+  @@index([eventType])
+  @@index([riskLevel])
+  @@index([userId])
+  @@index([ipAddress])
+  @@map("audit_logs")
 }

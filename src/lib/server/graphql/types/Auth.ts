@@ -65,11 +65,6 @@ export class PasswordResetInput {
 
   @Field(() => String)
   @IsString()
-  @MinLength(1, { message: 'リクエストIDは必須です' })
-  requestId!: string;
-
-  @Field(() => String)
-  @IsString()
   @MinLength(8, { message: 'パスワードは8文字以上である必要があります' })
   @MaxLength(128, { message: 'パスワードは128文字以内で入力してください' })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, {
@@ -85,7 +80,72 @@ export class PasswordResetResponse {
 
   @Field(() => String)
   message!: string;
+}
 
-  @Field(() => String, { nullable: true })
-  requestId?: string;
+@InputType()
+export class EmailVerificationInput {
+  @Field(() => String)
+  @IsString()
+  @MinLength(1, { message: 'トークンは必須です' })
+  token!: string;
+}
+
+@InputType()
+export class EmailChangeInput {
+  @Field(() => String)
+  @IsEmail({}, { message: '有効なメールアドレスを入力してください' })
+  @MaxLength(254, { message: 'メールアドレスは254文字以内で入力してください' })
+  newEmail!: string;
+}
+
+@InputType()
+export class EmailChangeConfirmInput {
+  @Field(() => String)
+  @IsString()
+  @MinLength(1, { message: 'トークンは必須です' })
+  token!: string;
+}
+
+@ObjectType()
+export class EmailVerificationResponse {
+  @Field(() => Boolean)
+  success!: boolean;
+
+  @Field(() => String)
+  message!: string;
+}
+
+@ObjectType()
+export class EmailChangeResponse {
+  @Field(() => Boolean)
+  success!: boolean;
+
+  @Field(() => String)
+  message!: string;
+}
+
+@InputType()
+export class ChangePasswordInput {
+  @Field(() => String)
+  @IsString()
+  @MinLength(1, { message: '現在のパスワードは必須です' })
+  currentPassword!: string;
+
+  @Field(() => String)
+  @IsString()
+  @MinLength(8, { message: 'パスワードは8文字以上である必要があります' })
+  @MaxLength(128, { message: 'パスワードは128文字以内で入力してください' })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, {
+    message: 'パスワードは8文字以上で、大文字・小文字・数字を含む必要があります',
+  })
+  newPassword!: string;
+}
+
+@ObjectType()
+export class ChangePasswordResponse {
+  @Field(() => Boolean)
+  success!: boolean;
+
+  @Field(() => String)
+  message!: string;
 }

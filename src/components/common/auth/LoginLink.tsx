@@ -1,7 +1,9 @@
 import { Button } from '@/components/common/ui/Button';
 import { Login as LoginIcon, PersonAdd as PersonAddIcon } from '@mui/icons-material';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useI18n } from '@/hooks/useI18n';
 import NextLink from 'next/link';
+import { Messages } from '@/lib/i18n/messages';
 
 export type AuthLinkVariant = 'header' | 'mobile' | 'home';
 export type AuthLinkType = 'login' | 'register';
@@ -11,11 +13,11 @@ interface AuthLinkProps {
   type: AuthLinkType;
 }
 
-const typeConfig = {
+const getTypeConfig = (messages: Messages) => ({
   login: {
     href: '/login',
     icon: LoginIcon,
-    text: 'ログイン',
+    text: messages.auth.login,
     colors: {
       primary: '#3b82f6',
       hover: '#2563eb',
@@ -27,7 +29,7 @@ const typeConfig = {
   register: {
     href: '/register',
     icon: PersonAddIcon,
-    text: '新規登録',
+    text: messages.auth.register,
     colors: {
       primary: '#059669',
       hover: '#047857',
@@ -36,6 +38,14 @@ const typeConfig = {
       hoverShadow: 'rgba(5, 150, 105, 0.4)',
     },
   },
+});
+
+type ColorConfig = {
+  primary: string;
+  hover: string;
+  light: string;
+  shadow: string;
+  hoverShadow: string;
 };
 
 const variantConfig = {
@@ -57,7 +67,7 @@ const variantConfig = {
     variant: 'outlined' as const,
     size: 'medium' as const,
     showIcon: true,
-    sx: (colors: typeof typeConfig.login.colors) => ({
+    sx: (colors: ColorConfig) => ({
       borderColor: colors.primary,
       color: colors.primary,
       width: '100%',
@@ -71,7 +81,7 @@ const variantConfig = {
     variant: 'contained' as const,
     size: 'large' as const,
     showIcon: true,
-    sx: (colors: typeof typeConfig.login.colors) => ({
+    sx: (colors: ColorConfig) => ({
       minWidth: { xs: 200, sm: 220 },
       width: { xs: '100%', sm: 'auto' },
       maxWidth: { xs: 300, sm: 'none' },
@@ -88,7 +98,8 @@ const variantConfig = {
 
 export function AuthLink({ variant, type }: AuthLinkProps) {
   const { isLoading } = useAuth();
-  const typeConf = typeConfig[type];
+  const { messages } = useI18n();
+  const typeConf = getTypeConfig(messages)[type];
   const variantConf = variantConfig[variant];
   const IconComponent = typeConf.icon;
 
@@ -106,7 +117,7 @@ export function AuthLink({ variant, type }: AuthLinkProps) {
       authButton
       sx={sx}
     >
-      {isLoading ? '読込中…' : typeConf.text}
+      {isLoading ? messages.common.loading : typeConf.text}
     </Button>
   );
 }

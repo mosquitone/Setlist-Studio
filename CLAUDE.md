@@ -11,6 +11,11 @@ mosquitone Emotional Setlist Studioは、音楽バンド向けのモダンなセ
 - **デプロイリポジトリ**: GitLab（https://gitlab.com/mosquitone8/setlist-studio）
 - **デプロイメント**: Vercelを通じてGitLabリポジトリから本番環境へデプロイ
 
+## ソース修正
+
+すべての実装が完了後、必ずlintチェックとコンパイルチェックを行った上で、完了とすること。
+コミット前に、必ずClaude.mdを更新するかを検討すること
+
 ### Git操作
 - **GitHub CLI**: `gh` コマンドが利用可能（v2.74.1）- プルリクエスト、Issue管理
 - **GitLab CLI**: `glab` コマンドが利用可能（v1.63.0）- プロジェクト管理、MRなど
@@ -50,6 +55,10 @@ mosquitone Emotional Setlist Studioは、音楽バンド向けのモダンなセ
   - `IP_HASH_SALT`: IPアドレスハッシュ化用ソルト (16文字以上)
   - `CRON_SECRET`: Vercelクロンジョブ認証用シークレット (32文字以上)
   - `POSTGRES_PASSWORD`: Docker用PostgreSQLパスワード (ローカル開発のみ)
+  - `RESEND_API_KEY`: Resendメール送信APIキー
+  - `RESEND_FROM_EMAIL`: メール送信元アドレス
+  - `EMAIL_VERIFICATION_SECRET`: メール認証用シークレット (32文字以上)
+  - `PASSWORD_RESET_SECRET`: パスワードリセット用シークレット (32文字以上)
 
 ### 環境変数詳細
 
@@ -61,6 +70,10 @@ mosquitone Emotional Setlist Studioは、音楽バンド向けのモダンなセ
 | `IP_HASH_SALT` | IP匿名化 | 16文字以上の任意文字列 | 強力なランダム文字列 | `openssl rand -base64 16` |
 | `CRON_SECRET` | クロンジョブ認証 | 32文字以上の任意文字列 | 強力なランダム文字列 | `openssl rand -base64 32` |
 | `POSTGRES_PASSWORD` | Docker PostgreSQL | `postgres` | 未使用 (マネージドDB) | N/A |
+| `RESEND_API_KEY` | Resendメール送信 | `re_xxxxxx` | Resendダッシュボードから取得 | Resendアカウント作成 |
+| `RESEND_FROM_EMAIL` | メール送信元 | `onboarding@resend.dev` | `noreply@yourdomain.com` | 独自ドメイン設定 |
+| `EMAIL_VERIFICATION_SECRET` | メール認証署名 | 32文字以上の任意文字列 | 強力なランダム文字列 | `openssl rand -base64 32` |
+| `PASSWORD_RESET_SECRET` | パスワードリセット署名 | 32文字以上の任意文字列 | 強力なランダム文字列 | `openssl rand -base64 32` |
 | `NODE_ENV` | 環境モード | `development` | Vercelで自動設定 | N/A |
 
 ## アーキテクチャ概要
@@ -233,6 +246,12 @@ mosquitone Emotional Setlist Studioは、音楽バンド向けのモダンなセ
 │   │   ├── login/          # ログインページ
 │   │   │   ├── page.tsx
 │   │   │   └── LoginClient.tsx
+│   │   ├── auth/           # 認証関連ページ
+│   │   │   ├── check-email/ # メール認証ページ
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── CheckEmailClient.tsx
+│   │   │   └── forgot-password/ # パスワードリセット
+│   │   │       └── ForgotPasswordClient.tsx
 │   │   ├── profile/        # プロフィールページ
 │   │   │   └── page.tsx
 │   │   ├── register/       # 登録ページ
@@ -307,6 +326,9 @@ mosquitone Emotional Setlist Studioは、音楽バンド向けのモダンなセ
 │   │   │   ├── auth/
 │   │   │   │   ├── auth.ts
 │   │   │   │   └── middleware.ts
+│   │   │   ├── email/          # メール配信システム
+│   │   │   │   ├── emailService.ts
+│   │   │   │   └── emailReliability.ts
 │   │   │   ├── graphql/
 │   │   │   │   ├── context.ts
 │   │   │   │   ├── generated-schema.ts
@@ -323,7 +345,9 @@ mosquitone Emotional Setlist Studioは、音楽バンド向けのモダンなセ
 │   │   │   ├── csrf.ts
 │   │   │   ├── headers.ts
 │   │   │   ├── rateLimit.ts
-│   │   │   └── threatDetection.ts
+│   │   │   ├── threatDetection.ts
+│   │   │   ├── simple-audit-logger.ts
+│   │   │   └── security-logger-db.ts
 │   │   └── shared/         # クライアント/サーバー共有ユーティリティ
 │   │       └── types.ts
 │   └── types/              # TypeScript型定義
@@ -370,7 +394,8 @@ mosquitone Emotional Setlist Studioは、音楽バンド向けのモダンなセ
 
 **src/lib/**: 共有ユーティリティ
 - `server/graphql/`: GraphQLスキーマ、リゾルバー、型定義
-- `security/`: レート制限、脅威検出、CSRF保護
+- `server/email/`: メール配信システム（Circuit Breaker・リトライ機構付き信頼性向上）
+- `security/`: レート制限、脅威検出、CSRF保護、軽量監査ログ（AuditLog）
 - `client/`: Apollo Client、認証クライアント
 
 ### 現在のステータス
@@ -391,6 +416,16 @@ mosquitone Emotional Setlist Studioは、音楽バンド向けのモダンなセ
 - **SEO対策**: 完全実装済み（プレビューデプロイメント制御、動的サイトマップ、AIボット制御、2025年対応）
 - **コンプライアンス**: 利用規約・プライバシーポリシー完全実装、実装整合性確保
 - **デプロイ**: Vercel用ハイブリッドアーキテクチャ最適化で本番対応
+- **PR #40改善実装**: セキュリティ強化・UX改善・メール信頼性向上完了（2025-07-19）
+  - ✅ メール認証UX改善（/auth/check-email、プログレス表示、再送信クールダウン）
+  - ✅ セキュリティ強化（軽量監査ログ、Circuit Breaker、リトライ機構）
+  - ✅ 本番環境マイグレーション対応（完全ガイド・P3005エラー対応）
+  - ✅ Vercelリソース効率化（軽量実装、コスト最適化）
+- **i18n(国際化)機能**: 完全実装完了（2025-07-19）
+  - ✅ 日本語・英語対応の完全なメッセージシステム
+  - ✅ 認証状態メッセージ・フォームバリデーション国際化
+  - ✅ メール機能WithDetails版への移行完了
+  - ✅ 全UIコンポーネントの多言語対応実装
 
 ## API Routes詳細
 
@@ -463,6 +498,7 @@ mosquitone Emotional Setlist Studioは、音楽バンド向けのモダンなセ
 - **CSRF保護**: タイミング攻撃耐性
 - **レート制限**: 分散対応データベースベース
 - **脅威検出**: ブルートフォース攻撃検出
+- **監査ログ**: リスクベース軽量監査システム（AuditLogテーブル）
 - **データ保護**: 入力サニタイゼーション + SQLインジェクション防止
 - **自動クリーンアップ**: Vercelクロン経由の定期メンテナンス
 
@@ -474,6 +510,16 @@ mosquitone Emotional Setlist Studioは、音楽バンド向けのモダンなセ
 最新の開発履歴と変更記録については、[HISTORY.md](./docs/project/HISTORY.md)を参照してください。
 
 ### 最新の主要更新
+- **i18n(国際化)機能完全実装 (2025-07-19)**: 日本語・英語対応の完全な多言語システム
+  - ✅ 統合メッセージ構造（messages.ts）による一元管理
+  - ✅ 認証状態・フォームバリデーション・UI全体の国際化
+  - ✅ WithDetails版メール機能への移行完了
+  - ✅ 全34コンポーネントの多言語対応実装
+- **PR #40改善実装完了 (2025-07-19)**: セキュリティ強化・UX改善・メール信頼性向上・本番マイグレーション完了
+  - ✅ メール認証UX改善（/auth/check-email、プログレス表示、再送信クールダウンタイマー）
+  - ✅ セキュリティ強化（軽量監査ログAuditLog、Circuit Breaker、exponential backoffリトライ）
+  - ✅ 本番環境マイグレーション対応（完全ガイド・P3005エラー対応手順）
+  - ✅ Vercelリソース効率化（軽量実装、コスト最適化、デグレードなし）
 - **高優先度SEO対策実装 (2025-07-18)**: プレビューデプロイメント制御、動的サイトマップ、AIボット制御完全実装
 - **利用規約・プライバシーポリシー実装整合性修正 (2025-07-18)**: 虚偽記載の削除、Cookie使用の正確化、実装済みセキュリティ機能の明記
 - **GraphQL N+1問題解決 (2025-07-17)**: SetlistResolver FieldResolver最適化、事前ロード戦略による性能向上

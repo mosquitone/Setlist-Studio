@@ -22,6 +22,7 @@ import {
 } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { Song } from '../../types/graphql';
+import { useI18n } from '@/hooks/useI18n';
 
 interface SongTableProps {
   songs: Song[];
@@ -42,6 +43,7 @@ export function SongTable({
   onToggleSelection,
   onSelectAll,
 }: SongTableProps) {
+  const { messages } = useI18n();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -60,10 +62,10 @@ export function SongTable({
     return (
       <Box sx={{ textAlign: 'center', py: 8 }}>
         <Typography variant="h6" color="text.secondary">
-          楽曲がありません
+          {messages.songs.empty.title}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          新しい楽曲を追加してください
+          {messages.songs.empty.description}
         </Typography>
       </Box>
     );
@@ -93,7 +95,7 @@ export function SongTable({
                         onToggleSelection(song.id);
                       }}
                       size="small"
-                      aria-label={`${song.title}を選択`}
+                      aria-label={`${song.title}${messages.songs.table.selectSong}`}
                     />
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Typography variant="h6" component="h3" noWrap>
@@ -112,7 +114,7 @@ export function SongTable({
                       }}
                       color="primary"
                       size="small"
-                      aria-label={`${song.title}を編集`}
+                      aria-label={`${song.title}${messages.songs.table.editSong}`}
                     >
                       <EditIcon />
                     </IconButton>
@@ -123,7 +125,7 @@ export function SongTable({
                       }}
                       color="error"
                       size="small"
-                      aria-label={`${song.title}を削除`}
+                      aria-label={`${song.title}${messages.songs.table.deleteSong}`}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -131,9 +133,19 @@ export function SongTable({
                 </Stack>
 
                 <Stack direction="row" spacing={1} flexWrap="wrap">
-                  {song.key && <Chip label={`キー: ${song.key}`} size="small" variant="outlined" />}
+                  {song.key && (
+                    <Chip
+                      label={`${messages.songs.chips.keyPrefix}${song.key}`}
+                      size="small"
+                      variant="outlined"
+                    />
+                  )}
                   {song.tempo && (
-                    <Chip label={`テンポ: ${song.tempo}`} size="small" variant="outlined" />
+                    <Chip
+                      label={`${messages.songs.chips.tempoPrefix}${song.tempo}`}
+                      size="small"
+                      variant="outlined"
+                    />
                   )}
                 </Stack>
 
@@ -161,15 +173,15 @@ export function SongTable({
                 checked={isAllSelected}
                 indeterminate={isSomeSelected}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSelectAll(e.target.checked)}
-                aria-label="全て選択/解除"
+                aria-label={messages.songs.table.selectAll}
               />
             </TableCell>
-            <TableCell>タイトル</TableCell>
-            <TableCell>アーティスト</TableCell>
-            <TableCell>キー</TableCell>
-            <TableCell>テンポ</TableCell>
-            <TableCell>ノート</TableCell>
-            <TableCell align="right">アクション</TableCell>
+            <TableCell>{messages.songs.table.title}</TableCell>
+            <TableCell>{messages.songs.table.artist}</TableCell>
+            <TableCell>{messages.songs.table.key}</TableCell>
+            <TableCell>{messages.songs.table.tempo}</TableCell>
+            <TableCell>{messages.songs.table.notes}</TableCell>
+            <TableCell align="right">{messages.songs.table.actions}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -195,13 +207,13 @@ export function SongTable({
                   onDelete(song);
                 }
               }}
-              aria-label={`楽曲: ${song.title}。Enterで編集、Deleteで削除`}
+              aria-label={`${messages.songs.table.title}: ${song.title}。Enter${messages.songs.table.editSong}、Delete${messages.songs.table.deleteSong}`}
             >
               <TableCell padding="checkbox">
                 <Checkbox
                   checked={selectedSongs.includes(song.id)}
                   onChange={() => onToggleSelection(song.id)}
-                  aria-label={`${song.title}を選択`}
+                  aria-label={`${song.title}${messages.songs.table.selectSong}`}
                 />
               </TableCell>
               <TableCell>{song.title}</TableCell>
@@ -214,7 +226,7 @@ export function SongTable({
                   onClick={() => onEdit(song)}
                   color="primary"
                   size="small"
-                  aria-label={`${song.title}を編集`}
+                  aria-label={`${song.title}${messages.songs.table.editSong}`}
                 >
                   <EditIcon />
                 </IconButton>
@@ -222,7 +234,7 @@ export function SongTable({
                   onClick={() => onDelete(song)}
                   color="error"
                   size="small"
-                  aria-label={`${song.title}を削除`}
+                  aria-label={`${song.title}${messages.songs.table.deleteSong}`}
                 >
                   <DeleteIcon />
                 </IconButton>

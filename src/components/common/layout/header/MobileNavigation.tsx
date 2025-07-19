@@ -1,3 +1,5 @@
+'use client';
+
 import IconButton from '@mui/material/IconButton';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -16,6 +18,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { AuthLink } from '@/components/common/auth/LoginLink';
+import { useI18n } from '@/hooks/useI18n';
 
 interface NavigationItem {
   label: string;
@@ -37,6 +40,7 @@ export function MobileNavigation({
   onToggle,
 }: MobileNavigationProps) {
   const { isLoggedIn, user, logout } = useAuth();
+  const { messages } = useI18n();
   const pathname = usePathname();
 
   const handleLogout = () => {
@@ -130,7 +134,7 @@ export function MobileNavigation({
                   },
                 }}
               >
-                プロフィール
+                {messages.navigation.profile}
               </Button>
               <Button
                 fullWidth
@@ -157,7 +161,7 @@ export function MobileNavigation({
                   },
                 }}
               >
-                {isLoading ? '読込中…' : 'ログアウト'}
+                {isLoading ? messages.common.loading : messages.navigation.logout}
               </Button>
             </>
           ) : (

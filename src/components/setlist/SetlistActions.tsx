@@ -23,6 +23,7 @@ import {
   Lock as LockIcon,
 } from '@mui/icons-material';
 import { Theme } from '@/types/common';
+import { useI18n } from '@/components/providers/I18nProvider';
 
 interface SetlistActionsProps {
   onEdit: () => void;
@@ -55,6 +56,7 @@ export function SetlistActions({
 }: SetlistActionsProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { messages } = useI18n();
 
   if (isMobile) {
     // モバイル版: 縦積み表示
@@ -76,7 +78,7 @@ export function SetlistActions({
                   px: 1,
                 }}
               >
-                編集
+                {messages.common.edit}
               </Button>
               <Button
                 variant="outlined"
@@ -89,7 +91,7 @@ export function SetlistActions({
                   px: 1,
                 }}
               >
-                複製
+                {messages.setlistDetail.actions.duplicate}
               </Button>
             </Stack>
           )}
@@ -107,7 +109,7 @@ export function SetlistActions({
                 px: 1,
               }}
             >
-              ダウンロード
+              {messages.setlistDetail.actions.download}
             </Button>
             <Button
               variant="outlined"
@@ -120,7 +122,7 @@ export function SetlistActions({
                 px: 1,
               }}
             >
-              共有
+              {messages.setlistDetail.actions.share}
             </Button>
           </Stack>
         </Stack>
@@ -128,7 +130,13 @@ export function SetlistActions({
         {/* 設定・ツール群 */}
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
           {isOwner && onToggleVisibility && (
-            <Tooltip title={isPublic ? '非公開にする' : '公開にする'}>
+            <Tooltip
+              title={
+                isPublic
+                  ? messages.setlistDetail.actions.makePrivate
+                  : messages.setlistDetail.actions.makePublic
+              }
+            >
               <IconButton
                 onClick={onToggleVisibility}
                 size="small"
@@ -148,7 +156,13 @@ export function SetlistActions({
           )}
 
           {!isOwner && (
-            <Tooltip title={isPublic ? '公開セットリスト' : '非公開セットリスト'}>
+            <Tooltip
+              title={
+                isPublic
+                  ? `${messages.common.public}${messages.common.setlist}`
+                  : `${messages.common.private}${messages.common.setlist}`
+              }
+            >
               <Box
                 sx={{
                   display: 'flex',
@@ -193,13 +207,15 @@ export function SetlistActions({
                 IconComponent={ExpandMoreIcon}
                 sx={{ minWidth: 120 }}
                 renderValue={(value) => {
-                  if (value === 'black') return 'Theme: black';
-                  if (value === 'white') return 'Theme: white';
-                  return 'Theme: black';
+                  if (value === 'black')
+                    return `${messages.common.theme}: ${messages.common.basicBlack.toLowerCase()}`;
+                  if (value === 'white')
+                    return `${messages.common.theme}: ${messages.common.basicWhite.toLowerCase()}`;
+                  return `${messages.common.theme}: ${messages.common.basicBlack.toLowerCase()}`;
                 }}
               >
-                <MenuItem value="black">black</MenuItem>
-                <MenuItem value="white">white</MenuItem>
+                <MenuItem value="black">{messages.common.basicBlack.toLowerCase()}</MenuItem>
+                <MenuItem value="white">{messages.common.basicWhite.toLowerCase()}</MenuItem>
               </Select>
             </FormControl>
           )}
@@ -214,25 +230,31 @@ export function SetlistActions({
       <Box sx={{ display: 'flex', gap: 2 }}>
         {isOwner && (
           <Button variant="outlined" startIcon={<EditIcon />} onClick={onEdit}>
-            編集
+            {messages.common.edit}
           </Button>
         )}
         <Button variant="outlined" startIcon={<DownloadIcon />} onClick={onDownload}>
-          ダウンロード
+          {messages.setlistDetail.actions.download}
         </Button>
         <Button variant="outlined" startIcon={<ShareIcon />} onClick={onShare}>
-          共有
+          {messages.setlistDetail.actions.share}
         </Button>
         {isOwner && (
           <Button variant="outlined" startIcon={<DuplicateIcon />} onClick={onDuplicate}>
-            複製
+            {messages.setlistDetail.actions.duplicate}
           </Button>
         )}
       </Box>
 
       <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
         {isOwner && onToggleVisibility && (
-          <Tooltip title={isPublic ? '非公開にする' : '公開にする'}>
+          <Tooltip
+            title={
+              isPublic
+                ? messages.setlistDetail.actions.makePrivate
+                : messages.setlistDetail.actions.makePublic
+            }
+          >
             <IconButton
               onClick={onToggleVisibility}
               sx={{
@@ -249,7 +271,13 @@ export function SetlistActions({
         )}
 
         {!isOwner && (
-          <Tooltip title={isPublic ? '公開セットリスト' : '非公開セットリスト'}>
+          <Tooltip
+            title={
+              isPublic
+                ? `${messages.common.public}${messages.common.setlist}`
+                : `${messages.common.private}${messages.common.setlist}`
+            }
+          >
             <Box
               sx={{
                 display: 'flex',
@@ -293,13 +321,15 @@ export function SetlistActions({
               IconComponent={ExpandMoreIcon}
               sx={{ minWidth: 140 }}
               renderValue={(value) => {
-                if (value === 'black') return 'Theme: black';
-                if (value === 'white') return 'Theme: white';
-                return 'Theme: black';
+                if (value === 'black')
+                  return `${messages.common.theme}: ${messages.common.basicBlack.toLowerCase()}`;
+                if (value === 'white')
+                  return `${messages.common.theme}: ${messages.common.basicWhite.toLowerCase()}`;
+                return `${messages.common.theme}: ${messages.common.basicBlack.toLowerCase()}`;
               }}
             >
-              <MenuItem value="black">black</MenuItem>
-              <MenuItem value="white">white</MenuItem>
+              <MenuItem value="black">{messages.common.basicBlack.toLowerCase()}</MenuItem>
+              <MenuItem value="white">{messages.common.basicWhite.toLowerCase()}</MenuItem>
             </Select>
           </FormControl>
         )}

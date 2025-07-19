@@ -15,6 +15,7 @@ import {
 import { Delete as DeleteIcon, DragHandle as DragHandleIcon } from '@mui/icons-material';
 import { FormikProps } from 'formik';
 import { SetlistFormValues, SetlistFormItem } from '@/types/components';
+import { useI18n } from '@/hooks/useI18n';
 
 // 後方互換性のため型エイリアス
 type SetlistItem = SetlistFormItem;
@@ -43,6 +44,7 @@ export function SongItemInput({
   onMoveDown,
 }: SongItemInputProps) {
   const { values, errors, touched, handleChange, handleBlur } = formik;
+  const { messages } = useI18n();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -103,7 +105,7 @@ export function SongItemInput({
                 <DragHandleIcon />
               </IconButton>
               <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                楽曲 {index + 1}
+                {messages.common.song} {index + 1}
               </Typography>
             </Stack>
             <IconButton
@@ -149,7 +151,7 @@ export function SongItemInput({
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="楽曲名"
+                  label={messages.setlistForm.songsList.songTitle}
                   size="small"
                   error={
                     touched.items?.[index]?.title &&
@@ -174,7 +176,7 @@ export function SongItemInput({
             <TextField
               fullWidth
               name={`items.${index}.title`}
-              label="楽曲名"
+              label={messages.setlistForm.songsList.songTitle}
               value={item.title}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -202,7 +204,7 @@ export function SongItemInput({
           <TextField
             fullWidth
             name={`items.${index}.note`}
-            label="メモ（任意）"
+            label={messages.setlistForm.songsList.songNote}
             value={item.note}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -276,7 +278,7 @@ export function SongItemInput({
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="楽曲名"
+                      label={messages.setlistForm.songsList.songTitle}
                       size="small"
                       error={
                         touched.items?.[index]?.title &&
@@ -301,7 +303,7 @@ export function SongItemInput({
                 <TextField
                   fullWidth
                   name={`items.${index}.title`}
-                  label="楽曲名"
+                  label={messages.setlistForm.songsList.songTitle}
                   value={item.title}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -331,7 +333,7 @@ export function SongItemInput({
               <TextField
                 fullWidth
                 name={`items.${index}.note`}
-                label="メモ"
+                label={messages.setlistForm.songsList.songNote}
                 value={item.note}
                 onChange={handleChange}
                 onBlur={handleBlur}

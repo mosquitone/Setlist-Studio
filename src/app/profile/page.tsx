@@ -13,20 +13,48 @@ import Alert from '@mui/material/Alert';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import LockIcon from '@mui/icons-material/Lock';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useMutation } from '@apollo/client';
 import { UPDATE_USER_MUTATION, GET_ME_QUERY } from '@/lib/server/graphql/apollo-operations';
+import { gql } from '@apollo/client';
 import { apolloClient } from '@/lib/client/apollo-client';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useI18n } from '@/hooks/useI18n';
+
+const CHANGE_PASSWORD_MUTATION = gql`
+  mutation ChangePassword($input: ChangePasswordInput!) {
+    changePassword(input: $input) {
+      success
+      message
+    }
+  }
+`;
 
 function ProfileContent() {
   const { user } = useAuth();
+  const { messages } = useI18n();
   const [isEditing, setIsEditing] = useState(false);
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // パスワード変更用の状態
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
 
   const [updateUser, { loading: updateLoading }] = useMutation(UPDATE_USER_MUTATION, {
     onCompleted: (data) => {
@@ -40,19 +68,39 @@ function ProfileContent() {
           },
         });
 
-        setSuccess('プロフィールを更新しました');
+        setSuccess(messages.notifications.profileUpdated);
         setIsEditing(false);
       } catch (error) {
         if (process.env.NODE_ENV === 'development') {
           console.error('Failed to update cache:', error);
         }
-        setError('キャッシュの更新に失敗しました');
+        setError(messages.errors.somethingWentWrong);
       }
     },
     onError: (error) => {
       setError(error.message);
     },
   });
+
+  const [changePassword, { loading: changePasswordLoading }] = useMutation(
+    CHANGE_PASSWORD_MUTATION,
+    {
+      onCompleted: (data) => {
+        if (data.changePassword.success) {
+          setPasswordSuccess(data.changePassword.message);
+          setPasswordError('');
+          setIsChangingPassword(false);
+          setCurrentPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+        }
+      },
+      onError: (error) => {
+        setPasswordError(error.message);
+        setPasswordSuccess('');
+      },
+    },
+  );
 
   useEffect(() => {
     if (user) {
@@ -63,7 +111,7 @@ function ProfileContent() {
   const handleUpdateProfile = async () => {
     setError('');
     if (!username.trim()) {
-      setError('ユーザー名を入力してください');
+      setError(messages.validation.required);
       return;
     }
 
@@ -74,6 +122,50 @@ function ProfileContent() {
     });
   };
 
+  const handleChangePassword = async () => {
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    // バリデーション
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordError(messages.validation.required);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError(messages.validation.passwordsDoNotMatch);
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setPasswordError(messages.validation.passwordTooShort);
+      return;
+    }
+
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(newPassword)) {
+      setPasswordError(messages.validation.passwordTooShort);
+      return;
+    }
+
+    await changePassword({
+      variables: {
+        input: {
+          currentPassword,
+          newPassword,
+        },
+      },
+    });
+  };
+
+  const resetPasswordForm = () => {
+    setIsChangingPassword(false);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordError('');
+    setPasswordSuccess('');
+  };
+
   // ユーザー情報が取得できない場合の表示
   if (!user) {
     return (
@@ -81,13 +173,13 @@ function ProfileContent() {
         <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="h6" color="error" gutterBottom>
-              プロフィール情報を取得できませんでした
+              {messages.errors.somethingWentWrong}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              ページを再読み込みするか、再度ログインしてください。
+              {messages.errors.somethingWentWrong}
             </Typography>
             <Button sx={{ mt: 2 }} onClick={() => window.location.reload()}>
-              ページを再読み込み
+              {messages.common.back}
             </Button>
           </Box>
         </Paper>
@@ -114,10 +206,10 @@ function ProfileContent() {
           </Avatar>
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h4" gutterBottom>
-              プロフィール
+              {messages.auth.profile}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              アカウント情報の確認と編集
+              {messages.pages.profile.description}
             </Typography>
           </Box>
         </Box>
@@ -136,13 +228,19 @@ function ProfileContent() {
           </Alert>
         )}
 
+        {passwordSuccess && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {passwordSuccess}
+          </Alert>
+        )}
+
         <Box sx={{ mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <PersonIcon sx={{ mr: 2, color: 'text.secondary' }} />
             {isEditing ? (
               <TextField
                 fullWidth
-                label="ユーザー名"
+                label={messages.auth.username}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 size="small"
@@ -150,9 +248,11 @@ function ProfileContent() {
             ) : (
               <Box>
                 <Typography variant="body2" color="text.secondary">
-                  ユーザー名
+                  {messages.auth.username}
                 </Typography>
-                <Typography variant="body1">{currentUser?.username || '未設定'}</Typography>
+                <Typography variant="body1">
+                  {currentUser?.username || messages.auth.noData}
+                </Typography>
               </Box>
             )}
           </Box>
@@ -161,7 +261,7 @@ function ProfileContent() {
             <EmailIcon sx={{ mr: 2, color: 'text.secondary' }} />
             <Box>
               <Typography variant="body2" color="text.secondary">
-                メールアドレス
+                {messages.auth.email}
               </Typography>
               <Typography variant="body1">{currentUser?.email}</Typography>
             </Box>
@@ -171,15 +271,119 @@ function ProfileContent() {
             <CalendarTodayIcon sx={{ mr: 2, color: 'text.secondary' }} />
             <Box>
               <Typography variant="body2" color="text.secondary">
-                アカウント作成日
+                {messages.auth.createdAt}
               </Typography>
               <Typography variant="body1">
                 {currentUser?.createdAt
                   ? format(new Date(currentUser.createdAt), 'yyyy年MM月dd日', { locale: ja })
-                  : '不明'}
+                  : messages.auth.noData}
               </Typography>
             </Box>
           </Box>
+        </Box>
+
+        <Divider sx={{ mb: 3 }} />
+
+        {/* パスワード変更セクション */}
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <LockIcon sx={{ mr: 2, color: 'text.secondary' }} />
+            <Typography variant="h6">{messages.auth.changePassword}</Typography>
+          </Box>
+
+          {passwordError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {passwordError}
+            </Alert>
+          )}
+
+          {isChangingPassword ? (
+            <Box sx={{ mb: 2 }}>
+              <TextField
+                fullWidth
+                label={messages.auth.currentPassword}
+                type={showCurrentPassword ? 'text' : 'password'}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                size="small"
+                sx={{ mb: 2 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        edge="end"
+                      >
+                        {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                fullWidth
+                label={messages.auth.newPassword}
+                type={showNewPassword ? 'text' : 'password'}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                size="small"
+                sx={{ mb: 2 }}
+                helperText={messages.validation.passwordTooShort}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowNewPassword(!showNewPassword)} edge="end">
+                        {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                fullWidth
+                label={messages.auth.confirmPassword}
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                size="small"
+                sx={{ mb: 2 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        edge="end"
+                      >
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                <Button
+                  variant="outlined"
+                  onClick={resetPasswordForm}
+                  disabled={changePasswordLoading}
+                >
+                  {messages.common.cancel}
+                </Button>
+                <Button onClick={handleChangePassword} disabled={changePasswordLoading}>
+                  {changePasswordLoading ? messages.common.loading : messages.auth.changePassword}
+                </Button>
+              </Box>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-start' }}>
+              <Button
+                variant="outlined"
+                onClick={() => setIsChangingPassword(true)}
+                startIcon={<LockIcon />}
+              >
+                {messages.auth.changePassword}
+              </Button>
+            </Box>
+          )}
         </Box>
 
         <Divider sx={{ mb: 3 }} />
@@ -196,22 +400,22 @@ function ProfileContent() {
                 }}
                 disabled={updateLoading}
               >
-                キャンセル
+                {messages.common.cancel}
               </Button>
               <Button onClick={handleUpdateProfile} disabled={updateLoading}>
-                {updateLoading ? '更新中...' : '保存'}
+                {updateLoading ? messages.common.loading : messages.common.save}
               </Button>
             </>
           ) : (
             <Button onClick={() => setIsEditing(true)} sx={{ borderRadius: 10 }}>
-              プロフィールを編集
+              {messages.common.edit}
             </Button>
           )}
         </Box>
 
         <Box sx={{ mt: 4, pt: 3, borderTop: 1, borderColor: 'divider' }}>
           <Typography variant="body2" color="text.secondary" align="center">
-            アカウントID: {currentUser?.id}
+            {messages.auth.accountId}: {currentUser?.id}
           </Typography>
         </Box>
       </Paper>

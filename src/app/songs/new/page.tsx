@@ -9,6 +9,8 @@ import { useMutation } from '@apollo/client';
 import { CREATE_SONG } from '@/lib/server/graphql/apollo-operations';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useI18n } from '@/hooks/useI18n';
+import { Messages } from '@/lib/i18n/messages';
 
 interface SongFormValues {
   title: string;
@@ -18,13 +20,14 @@ interface SongFormValues {
   notes: string;
 }
 
-const validationSchema = Yup.object({
-  title: Yup.string().required('楽曲名は必須です'),
-  artist: Yup.string().required('アーティスト名は必須です'),
-  key: Yup.string(),
-  tempo: Yup.number().typeError('数値を入力してください').nullable(),
-  notes: Yup.string(),
-});
+const getValidationSchema = (messages: Messages) =>
+  Yup.object({
+    title: Yup.string().required(messages.songs.newSong.validation.titleRequired),
+    artist: Yup.string().required(messages.songs.newSong.validation.artistRequired),
+    key: Yup.string(),
+    tempo: Yup.number().typeError(messages.songs.newSong.validation.tempoInvalid).nullable(),
+    notes: Yup.string(),
+  });
 
 const initialValues: SongFormValues = {
   title: '',
@@ -35,6 +38,7 @@ const initialValues: SongFormValues = {
 };
 
 export default function NewSongPage() {
+  const { messages } = useI18n();
   const router = useRouter();
   const [createSong, { loading, error }] = useMutation(CREATE_SONG);
 
@@ -60,12 +64,12 @@ export default function NewSongPage() {
     <ProtectedRoute>
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography variant="h4" gutterBottom>
-          新しい楽曲を追加
+          {messages.songs.newSong.title}
         </Typography>
 
         <Formik
           initialValues={initialValues}
-          validationSchema={validationSchema}
+          validationSchema={getValidationSchema(messages)}
           onSubmit={handleSubmit}
         >
           {({ values, errors, touched, handleChange, handleBlur }) => (
@@ -75,7 +79,7 @@ export default function NewSongPage() {
                   <TextField
                     fullWidth
                     name="title"
-                    label="楽曲名"
+                    label={messages.songs.form.titleLabel}
                     value={values.title}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -86,7 +90,7 @@ export default function NewSongPage() {
                   <TextField
                     fullWidth
                     name="artist"
-                    label="アーティスト"
+                    label={messages.songs.form.artistLabel}
                     value={values.artist}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -97,7 +101,7 @@ export default function NewSongPage() {
                   <TextField
                     fullWidth
                     name="key"
-                    label="キー"
+                    label={messages.songs.form.keyLabel}
                     value={values.key}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -105,7 +109,7 @@ export default function NewSongPage() {
                   <TextField
                     fullWidth
                     name="tempo"
-                    label="テンポ (BPM)"
+                    label={messages.songs.form.tempoLabel}
                     type="number"
                     value={values.tempo}
                     onChange={handleChange}
@@ -116,7 +120,7 @@ export default function NewSongPage() {
                   <TextField
                     fullWidth
                     name="notes"
-                    label="メモ"
+                    label={messages.songs.form.notesLabel}
                     multiline
                     rows={3}
                     value={values.notes}
@@ -128,16 +132,16 @@ export default function NewSongPage() {
 
               {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
-                  楽曲の作成に失敗しました: {error.message}
+                  {messages.songs.newSong.createError}: {error.message}
                 </Alert>
               )}
 
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                 <Button variant="outlined" disabled={loading} onClick={() => router.back()}>
-                  キャンセル
+                  {messages.common.cancel}
                 </Button>
                 <Button type="submit" loading={loading}>
-                  作成
+                  {messages.songs.newSong.create}
                 </Button>
               </Box>
             </Form>

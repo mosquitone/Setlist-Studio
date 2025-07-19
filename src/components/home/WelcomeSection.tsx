@@ -2,8 +2,11 @@
 
 import { Box, Typography, Stack } from '@mui/material';
 import { LogoOfficialLink } from '@/components/common/LogoOfficialLink';
+import { useI18n } from '@/hooks/useI18n';
 
 export function WelcomeSection() {
+  const { messages } = useI18n();
+
   return (
     <Box sx={{ textAlign: 'center' }}>
       <Stack
@@ -42,15 +45,10 @@ export function WelcomeSection() {
         }}
       >
         <Box component="span" sx={{ display: { xs: 'block', md: 'inline' }, fontWeight: 'bold' }}>
-          ステージで利用できるアーティスト向けの
-          <br />
-          セットリスト作成アプリです。
+          {messages.pages.home.heroTitle}
         </Box>
         <Box component="span" sx={{ display: 'block' }}>
-          エクセルや手書きの時代はもう終わりです。
-        </Box>
-        <Box component="span" sx={{ display: 'block', mt: 2 }}>
-          このアプリの作成者もバンドをやっているので、自信を持ってお勧めします。
+          {messages.pages.home.heroSubtitle}
         </Box>
       </Typography>
     </Box>

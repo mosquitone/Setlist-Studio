@@ -3,14 +3,18 @@
 import React from 'react';
 import { Typography, List, ListItem, ListItemText } from '@mui/material';
 import LegalPageTemplate from '@/components/common/templates/LegalPageTemplate';
+import { useI18n } from '@/hooks/useI18n';
 
 const TermsPage: React.FC = () => {
+  const { messages } = useI18n();
+
   return (
-    <LegalPageTemplate
-      title="利用規約"
-      description="この利用規約（以下、「本規約」といいます。）は、mosquitone（以下、「当方」といいます。）がこのウェブサイト上で提供するサービス「Setlist Studio」（以下、「本サービス」といいます。）の利用条件を定めるものです。登録ユーザーの皆さま（以下、「ユーザー」といいます。）には、本規約に従って、本サービスをご利用いただきます。"
-      effectiveDate="2025年7月18日"
-    >
+    <LegalPageTemplate title={messages.pages.terms.title}>
+      <Typography variant="body2" color="text.secondary" paragraph>
+        この利用規約（以下、「本規約」といいます。）は、mosquitone（以下、「当方」といいます。）がこのウェブサイト上で提供するサービス「Setlist
+        Studio」（以下、「本サービス」といいます。）の利用条件を定めるものです。登録ユーザーの皆さま（以下、「ユーザー」といいます。）には、本規約に従って、本サービスをご利用いただきます。
+      </Typography>
+
       <Typography variant="h6" component="h2" sx={{ mt: 4, mb: 2 }}>
         第1条（適用）
       </Typography>

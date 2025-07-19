@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Container, CircularProgress, Typography, Alert } from '@mui/material';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useI18n } from '@/hooks/useI18n';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -15,11 +16,14 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({
   children,
   redirectTo = '/login',
-  loadingMessage = 'ログイン状態を確認中...',
+  loadingMessage,
   requireAuth = true,
 }: ProtectedRouteProps) {
   const { isLoggedIn, isLoading } = useAuth();
+  const { messages } = useI18n();
   const router = useRouter();
+
+  const defaultLoadingMessage = loadingMessage || messages.auth.checkingLoginStatus;
 
   useEffect(() => {
     if (!isLoading && !isLoggedIn && requireAuth) {
@@ -32,7 +36,7 @@ export function ProtectedRoute({
     return (
       <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
         <CircularProgress />
-        <Typography sx={{ mt: 2 }}>{loadingMessage}</Typography>
+        <Typography sx={{ mt: 2 }}>{defaultLoadingMessage}</Typography>
       </Container>
     );
   }
@@ -42,7 +46,7 @@ export function ProtectedRoute({
     return (
       <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
         <CircularProgress />
-        <Typography sx={{ mt: 2 }}>ログイン画面に移動中...</Typography>
+        <Typography sx={{ mt: 2 }}>{messages.auth.redirectingToLogin}</Typography>
       </Container>
     );
   }
@@ -66,6 +70,7 @@ export function SetlistProtectedRoute({
   error,
 }: SetlistProtectedRouteProps) {
   const { isLoggedIn, isLoading: authLoading } = useAuth();
+  const { messages } = useI18n();
   const router = useRouter();
 
   // 全てのuseEffectを最初に配置
@@ -119,7 +124,7 @@ export function SetlistProtectedRoute({
     return (
       <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
         <CircularProgress />
-        <Typography sx={{ mt: 2 }}>セットリストを読み込み中...</Typography>
+        <Typography sx={{ mt: 2 }}>{messages.common.loading}</Typography>
       </Container>
     );
   }
@@ -138,7 +143,7 @@ export function SetlistProtectedRoute({
       return (
         <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
           <CircularProgress />
-          <Typography sx={{ mt: 2 }}>ログイン画面に移動中...</Typography>
+          <Typography sx={{ mt: 2 }}>{messages.auth.redirectingToLogin}</Typography>
         </Container>
       );
     }
@@ -148,7 +153,7 @@ export function SetlistProtectedRoute({
   if (error || !setlistData) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="error">セットリストが見つかりません。</Alert>
+        <Alert severity="error">{messages.errors.setlistNotFound}</Alert>
       </Container>
     );
   }
@@ -158,7 +163,7 @@ export function SetlistProtectedRoute({
     return (
       <Container maxWidth="lg" sx={{ py: 4, textAlign: 'center' }}>
         <CircularProgress />
-        <Typography sx={{ mt: 2 }}>ログイン画面に移動中...</Typography>
+        <Typography sx={{ mt: 2 }}>{messages.auth.redirectingToLogin}</Typography>
       </Container>
     );
   }
